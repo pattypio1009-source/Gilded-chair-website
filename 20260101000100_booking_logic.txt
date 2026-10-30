@@ -1,0 +1,89 @@
+-- Server-side booking logic. All prices/deposits/assignment happen here, never in the browser.
+alter table public.bookings add column if not exists expires_at timestamptz;
+alter table public.payments add column if not exists provider text not null default 'demo' check (provider = 'demo');
+revoke truncate, references, trigger on all tables in schema public from anon, authenticated;
+
+create or replace function public.expire_pending() returns int
+language sql security definer set search_path = public as $$
+  with u as (update bookings set status='expired' where status='pending_payment' and expires_at < now() returning 1)
+  select count(*)::int from u $$;
+
+-- Hours in IST: Mon-Sat 10:00-21:00, Sun 10:00-18:00, 30-minute grid. p_stylist null = any stylist.
+create or replace function public.get_slots(p_service uuid, p_stylist uuid, p_day date)
+returns table(slot timestamptz, free boolean)
+language plpgsql security definer set search_path = public as $$
+#variable_conflict use_column
+declare dur int; close_h int; m int; t timestamptz; ok boolean;
+begin
+  perform expire_pending();
+  select duration_minutes into dur from services where id = p_service and is_active;
+  if dur is null then return; end if;
+  close_h := case when extract(dow from p_day) = 0 then 18 else 21 end;
+  for m in select g from generate_series(600, close_h*60 - dur, 30) g loop
+    t := (p_day::timestamp + make_interval(mins => m)) at time zone 'Asia/Kolkata';
+    ok := t > now() + interval '30 minutes' and exists (
+      select 1 from stylists s where s.is_active and (p_stylist is null or s.id = p_stylist)
+        and not exists (select 1 from bookings b where b.stylist_id = s.id
+          and b.status in ('pending_payment','confirmed')
+          and tstzrange(b.starts_at, b.ends_at) && tstzrange(t, t + make_interval(mins => dur))));
+    if t > now() then slot := t; free := ok; return next; end if;
+  end loop;
+end $$;
+
+create or replace function public.create_booking(p_service uuid, p_stylist uuid, p_start timestamptz,
+  p_name text, p_phone text, p_email text)
+returns table(booking_id uuid, stylist_name text, total_paise int, deposit_paise int, expires_at timestamptz)
+language plpgsql security definer set search_path = public as $$
+#variable_conflict use_column
+declare sv services; sid uuid; bid uuid; dep int; exp timestamptz := now() + interval '10 minutes';
+begin
+  select * into sv from services where id = p_service and is_active;
+  if not found then raise exception 'invalid_service'; end if;
+  if length(trim(coalesce(p_name,''))) not between 2 and 80
+     or coalesce(p_phone,'') !~ '^[0-9+ -]{7,15}$'
+     or coalesce(p_email,'') !~ '^\S+@\S+\.\S+$' then raise exception 'invalid_details'; end if;
+  if not exists (select 1 from get_slots(p_service, p_stylist, (p_start at time zone 'Asia/Kolkata')::date) g
+                 where g.slot = p_start and g.free) then raise exception 'slot_unavailable'; end if;
+  select s.id into sid from stylists s where s.is_active and (p_stylist is null or s.id = p_stylist)
+    and not exists (select 1 from bookings b where b.stylist_id = s.id and b.status in ('pending_payment','confirmed')
+      and tstzrange(b.starts_at, b.ends_at) && tstzrange(p_start, p_start + make_interval(mins => sv.duration_minutes)))
+    order by random() limit 1;
+  if sid is null then raise exception 'slot_unavailable'; end if;
+  dep := round(sv.price_paise * 0.2);
+  begin
+    insert into bookings(service_id, stylist_id, starts_at, ends_at, customer_name, customer_email, customer_phone,
+                         total_paise, deposit_paise, expires_at)
+    values (sv.id, sid, p_start, p_start + make_interval(mins => sv.duration_minutes), trim(p_name),
+            lower(trim(p_email)), trim(p_phone), sv.price_paise, dep, exp) returning id into bid;
+  exception when exclusion_violation then raise exception 'slot_unavailable'; end;
+  insert into payments(booking_id, amount_paise, status) values (bid, dep, 'created');
+  return query select bid, (select name from stylists where id = sid), sv.price_paise, dep, exp;
+end $$;
+
+-- DEMO payment only: no gateway, no card data. Recorded with provider='demo'.
+create or replace function public.demo_pay(p_booking uuid, p_outcome text) returns text
+language plpgsql security definer set search_path = public as $$
+declare b bookings;
+begin
+  perform expire_pending();
+  select * into b from bookings where id = p_booking for update;
+  if not found then raise exception 'not_found'; end if;
+  if b.status <> 'pending_payment' then raise exception 'booking_not_pending'; end if;
+  if p_outcome = 'success' then
+    update bookings set status='confirmed' where id = b.id;
+    update payments set status='paid', updated_at=now() where booking_id = b.id;
+  elsif p_outcome = 'failure' then
+    update payments set status='failed', updated_at=now() where booking_id = b.id;
+  elsif p_outcome = 'cancel' then
+    update bookings set status='cancelled' where id = b.id;
+    update payments set status='cancelled', updated_at=now() where booking_id = b.id;
+  else raise exception 'invalid_outcome'; end if;
+  return p_outcome;
+end $$;
+
+revoke all on function expire_pending(), get_slots(uuid,uuid,date),
+  create_booking(uuid,uuid,timestamptz,text,text,text), demo_pay(uuid,text) from public, anon, authenticated;
+grant execute on function expire_pending(), get_slots(uuid,uuid,date),
+  create_booking(uuid,uuid,timestamptz,text,text,text), demo_pay(uuid,text) to service_role;
+-- Expiry also runs on every availability/booking call. Optional extra (Database > Extensions > pg_cron):
+-- select cron.schedule('expire-pending','* * * * *','select public.expire_pending()');
