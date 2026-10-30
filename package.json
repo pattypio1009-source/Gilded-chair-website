@@ -1,0 +1,1 @@
+{"name":"the-gilded-chair","version":"1.0.0","private":true,"description":"Salon booking site (static + Vercel functions + Supabase). No runtime dependencies.","engines":{"node":">=18"}}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Gilded Chair — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1B1B1D;--surf:#26262A;--tx:#F5EFE3;--mut:#A39E92;--gold:#B89B5E;--gold2:#CDB174;--line:rgba(245,239,227,.14);--err:#E5675B;--ok:#6FBF8E;--on-gold:#1B1B1D;--serif:"Cormorant Garamond",Georgia,serif;--sans:Inter,system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#F5EFE3;--surf:#FFFDF8;--tx:#1B1B1D;--mut:#5C574D;--gold:#8A6D2F;--gold2:#6F5622;--line:rgba(27,27,29,.16);--err:#B3372B;--ok:#2E7D4F;--on-gold:#fff}}
+:root[data-theme="light"]{--bg:#F5EFE3;--surf:#FFFDF8;--tx:#1B1B1D;--mut:#5C574D;--gold:#8A6D2F;--gold2:#6F5622;--line:rgba(27,27,29,.16);--on-gold:#fff}
+html{scroll-behavior:smooth;scroll-padding-top:calc(5rem + env(safe-area-inset-top,0px))}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--tx);font:400 1rem/1.6 var(--sans);overflow-x:hidden}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:3px}
+.skip{position:absolute;left:-999px}.skip:focus{left:1rem;top:1rem;background:var(--gold);color:var(--on-gold);padding:.5rem 1rem;z-index:99}
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.25rem}
+section{padding:4.5rem 0}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.1}
+h2{font-size:clamp(2rem,5vw,3rem)}
+.eyebrow{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:.75rem}
+.lead{color:var(--mut);max-width:56ch;margin-top:1rem}
+.demo{background:var(--gold);color:var(--on-gold);text-align:center;font-size:.8rem;font-weight:600;padding:.45rem 1rem;letter-spacing:.04em}
+header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;height:4rem;gap:1rem}
+.logo{font-family:var(--serif);font-size:1.4rem;font-weight:600;text-decoration:none;color:var(--gold2)}
+nav ul{display:flex;gap:1.5rem;list-style:none;padding:0}
+nav ul a{text-decoration:none;font-size:.85rem;color:var(--mut)}nav ul a:hover{color:var(--tx)}
+.btn{display:inline-block;background:var(--gold);color:var(--on-gold);border:1px solid var(--gold);padding:.75rem 1.4rem;font:600 .9rem var(--sans);border-radius:2px;cursor:pointer;text-decoration:none;transition:.25s}
+.btn:hover{background:var(--gold2)}.btn.ghost{background:none;color:var(--tx);border-color:var(--line)}.btn.ghost:hover{border-color:var(--gold)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+#burger{display:none;background:none;border:1px solid var(--line);color:var(--tx);width:2.75rem;height:2.75rem;border-radius:2px;font-size:1.2rem}
+@media(max-width:820px){nav ul{display:none;position:absolute;top:4rem;left:0;right:0;flex-direction:column;background:var(--bg);padding:1rem 1.25rem;border-bottom:1px solid var(--line)}nav ul.open{display:flex}#burger{display:block}.navbook{display:none}}
+.hero{min-height:82vh;display:flex;align-items:center;background:radial-gradient(90% 70% at 80% 20%,color-mix(in srgb,var(--gold) 22%,transparent),transparent 60%),var(--bg)}
+.hero h1{font-size:clamp(2.8rem,9vw,6rem);max-width:12ch}.hero h1 em{color:var(--gold2);font-style:italic}
+.hero .row{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:2rem}
+.grid{display:grid;gap:1.25rem;margin-top:2.5rem}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{background:var(--surf);border:1px solid var(--line);padding:1.5rem;border-radius:2px;display:flex;flex-direction:column;gap:.5rem;transition:.3s}
+.card:hover{border-color:var(--gold);transform:translateY(-3px)}
+.price{color:var(--gold2);font-weight:600}.meta{color:var(--mut);font-size:.85rem}
+.card .btn{margin-top:auto;align-self:flex-start}
+.ph{aspect-ratio:4/3;background:radial-gradient(130% 130% at 30% 15%,var(--surf),var(--bg));border:1px solid var(--line);display:grid;place-items:center;font-family:var(--serif);font-size:2.4rem;color:var(--gold);border-radius:2px}
+.pf{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:2px;background:var(--bg);display:block;margin-bottom:.5rem}.ph{overflow:hidden}.ph img{width:100%;height:100%;object-fit:cover;display:block}.gal .ph{aspect-ratio:4/5}.av{width:4rem;height:4rem;border-radius:50%;border:1px solid var(--gold);display:grid;place-items:center;font-family:var(--serif);font-size:1.4rem;color:var(--gold2)}
+.tag{font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+.wiz{background:var(--surf);border:1px solid var(--line);padding:1.5rem;margin-top:2rem;border-radius:2px;max-width:760px}
+.steps{display:flex;gap:.35rem;margin-bottom:1.5rem}.steps i{flex:1;height:3px;background:var(--line)}.steps i.on{background:var(--gold)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem;margin:1rem 0}
+.opt{background:var(--bg);color:var(--tx);border:1px solid var(--line);padding:.7rem;font:500 .85rem var(--sans);cursor:pointer;border-radius:2px;text-align:left}
+.opt:hover,.opt.sel{border-color:var(--gold);color:var(--gold2)}.opt:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
+label{display:block;font-size:.85rem;margin:.9rem 0 .3rem}
+input[type=text],input[type=tel],input[type=email]{width:100%;background:var(--bg);color:var(--tx);border:1px solid var(--line);padding:.7rem;font:inherit;border-radius:2px}
+.err{color:var(--err);font-size:.85rem;margin-top:.4rem}.okm{color:var(--ok)}
+.notice{border:1px solid var(--gold);background:color-mix(in srgb,var(--gold) 12%,transparent);padding:.9rem 1rem;font-weight:600;font-size:.9rem;border-radius:2px;margin:1rem 0}
+table{width:100%;border-collapse:collapse;margin:1rem 0}td{padding:.5rem 0;border-bottom:1px solid var(--line)}td:last-child{text-align:right}
+.acts{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.25rem}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:2rem}
+ul.plain{padding-left:1.1rem;color:var(--mut)}ul.plain li{margin:.35rem 0}
+footer{border-top:1px solid var(--line);padding:2.5rem 0;color:var(--mut);font-size:.85rem}
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none;transition:none}.card{transition:none}}
+
+/* --- cinematic layer (transform/opacity only; disabled for reduced motion) --- */
+.prog{position:fixed;top:0;left:0;right:0;height:2px;background:var(--gold2);transform:scaleX(0);transform-origin:0 50%;z-index:30;pointer-events:none}
+header{transition:box-shadow .3s}header.sc{box-shadow:0 10px 30px rgba(0,0,0,.22)}
+section{position:relative}
+section+section::before{content:'';position:absolute;top:0;left:50%;width:min(1160px,90%);height:1px;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.35}
+#stylists,#gallery,#reviews,#contact{content-visibility:auto;contain-intrinsic-size:auto 640px}
+.hero{position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:2;will-change:transform,opacity}
+.hl{position:absolute;inset:-10%;pointer-events:none;will-change:transform}
+.hl1{background:radial-gradient(38% 34% at 78% 28%,color-mix(in srgb,var(--gold) 30%,transparent),transparent 70%)}
+.hl2{background:conic-gradient(from 200deg at 70% 60%,transparent,color-mix(in srgb,var(--gold2) 16%,transparent),transparent 32%);opacity:.8}
+.hero h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding:0 .04em .12em}
+.hero h1 .w>span{display:inline-block;transform:translateY(110%);animation:up .9s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:calc(var(--i)*70ms + 120ms)}
+@keyframes up{to{transform:none}}
+@keyframes rise{from{opacity:0;translate:0 28px}}
+.rv:not(.in) .grid>*{opacity:0}
+.rv.in .grid>*{animation:rise .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--i,0)*90ms)}
+.rv{transform:translateY(24px) scale(.98)}
+.card{position:relative;overflow:hidden;transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out,border-color .3s,box-shadow .3s}
+.card:hover{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.card::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),color-mix(in srgb,var(--gold) 18%,transparent),transparent 70%)}
+.card:hover::before{opacity:1}
+.gal .ph img{transform:scale(1.12)}
+.btn:active{transform:scale(.97)}
+.pay{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg)}
+.pay-h{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:linear-gradient(135deg,#1f2a44,#2b3a67);color:#fff}
+.pay-t{display:flex;gap:.4rem;padding:.75rem;flex-wrap:wrap}.pay-t .opt{flex:1;text-align:center;min-width:70px}
+.pay-b{padding:0 1rem 1rem}.pay .acts{padding:0 1rem 1rem}
+.fake{border:1px dashed var(--gold);padding:.8rem;margin-top:.4rem;font-family:ui-monospace,monospace;word-break:break-all}
+@media(prefers-reduced-motion:reduce){.hero h1 .w>span{animation:none;transform:none}.rv:not(.in) .grid>*{opacity:1}.rv.in .grid>*{animation:none}.rv{transform:none}.card,.card:hover{transform:none;transition:none}.gal .ph img{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="prog" aria-hidden="true"></div>
+<div class="demo">DEMO SITE — bookings are saved, payments are simulated.</div>
+<header><div class="wrap"><nav aria-label="Main">
+<a class="logo" href="#top">The Gilded Chair</a>
+<ul id="menu"><li><a href="#services">Services</a></li><li><a href="#stylists">Stylists</a></li><li><a href="#gallery">Gallery</a></li><li><a href="#reviews">Reviews</a></li><li><a href="#book">Book</a></li><li><a href="#contact">Contact</a></li></ul>
+<a class="btn navbook" href="#book">Book Now</a>
+<button id="burger" aria-label="Menu" aria-expanded="false">☰</button>
+</nav></div></header>
+<main id="main">
+<section class="hero" id="top"><div class="hl hl1" aria-hidden="true"></div><div class="hl hl2" aria-hidden="true"></div><div class="wrap">
+<p class="eyebrow">Anna Nagar · Chennai</p>
+<h1><span class="w" style="--i:0"><span>Grooming,</span></span> <span class="w" style="--i:1"><span><em>refined</em></span></span> <span class="w" style="--i:2"><span>to</span></span> <span class="w" style="--i:3"><span>your</span></span> <span class="w" style="--i:4"><span>style.</span></span></h1>
+<p class="lead">A premium men’s grooming studio for classic cuts, modern styling, beard work and hot towel shaves — in a calm, personal setting.</p>
+<div class="row"><a class="btn" href="#book">Book Now</a><a class="btn ghost" href="#services">View Services</a></div>
+</div></section>
+
+<section id="services"><div class="wrap rv">
+<p class="eyebrow">Services</p><h2>Crafted, never rushed.</h2>
+<p class="lead">Prices and durations are sample data. A real owner would edit these in an admin dashboard.</p>
+<div class="grid g3" id="svcGrid"></div></div></section>
+
+<section id="stylists"><div class="wrap rv">
+<p class="eyebrow">Stylists</p><h2>Choose who you sit with.</h2>
+<div class="grid g3" id="styGrid"></div></div></section>
+
+<section id="gallery"><div class="wrap rv">
+<p class="eyebrow">Gallery</p><h2>Inside the studio.</h2>
+<p class="lead">Sample photography for this demo.</p>
+<div class="grid g3 gal"><figure class="ph"><img src="/assets/img1.webp" alt="Classic barber pole outside the studio" loading="lazy"></figure><figure class="ph"><img src="/assets/img2.webp" alt="Row of green leather barber chairs on a checkered floor" loading="lazy"></figure><figure class="ph"><img src="/assets/img3.webp" alt="Shaving brush, bowl and straight razors on a dark towel" loading="lazy"></figure></div></div></section>
+
+<section id="reviews"><div class="wrap rv">
+<p class="eyebrow">Reviews</p><h2>Kind words.</h2>
+<div class="grid g3">
+<div class="card"><p>“The most relaxed haircut I’ve had. Detail-obsessed and genuinely friendly.”</p><span class="tag">Demo review · Rahul S.</span></div>
+<div class="card"><p>“Hot towel shave was a ritual, not a chore. Booking online took a minute.”</p><span class="tag">Demo review · Imran K.</span></div>
+<div class="card"><p>“Walked in tired, walked out sharp. The Premium Experience is worth it.”</p><span class="tag">Demo review · Naveen P.</span></div>
+</div></div></section>
+
+<section id="book"><div class="wrap">
+<p class="eyebrow">Book</p><h2>Reserve your chair.</h2>
+<p class="lead">Choose your service, stylist and time. The deposit step is a demo — no real money is ever charged.</p>
+<div class="wiz" id="wiz" aria-live="polite"></div>
+
+</div></section>
+
+<section id="contact"><div class="wrap rv">
+<p class="eyebrow">Visit</p><h2>Hours &amp; contact.</h2>
+<div class="cols">
+<div><h3>Opening hours</h3><p class="lead">Monday–Saturday: 10:00 AM – 9:00 PM<br>Sunday: 10:00 AM – 6:00 PM</p></div>
+<div><h3>Find us</h3><p class="lead">Anna Nagar, Chennai, Tamil Nadu, India<br>+91 90000 12345<br>hello@thegildedchair.example<br><span class="tag">Fictional demo details</span></p></div>
+</div></div></section>
+
+</main>
+<footer><div class="wrap">© 2026 The Gilded Chair — fictional demonstration business. Development preview.</div></footer>
+
+<script>
+let S=[
+{n:'Classic Haircut',p:500,m:30,d:'A precise, tailored cut finished with styling.'},
+{n:'Modern Style Cut',p:800,m:45,d:'Contemporary shapes, textured and personalised.'},
+{n:'Beard Styling',p:350,m:20,d:'Shaped, lined and conditioned.'},
+{n:'Hot Towel Shave',p:450,m:30,d:'A traditional straight-line shave with warm towels.'},
+{n:'Haircut and Beard Package',p:1000,m:60,d:'Our cut and beard work in one visit.'},
+{n:'Premium Grooming Experience',p:1500,m:90,d:'Cut, beard, shave and a finishing treatment.'}];
+let T=[{n:'Any available stylist',r:'We’ll pick the best fit'},{n:'Arjun Mehta',r:'Master stylist',img:'/assets/img4.webp'},{n:'Karthik Rao',r:'Beard specialist',img:'/assets/img5.webp'},{n:'Vikram Iyer',r:'Modern styling',img:'/assets/img6.webp'}];
+const DEP=0.2,inr=n=>'₹'+n.toLocaleString('en-IN');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=s=>document.querySelector(s);
+const idx=()=>document.querySelectorAll('.rv .grid').forEach(g=>[...g.children].forEach((c,i)=>c.style.setProperty('--i',i)));
+function paint(){
+$('#svcGrid').innerHTML=S.map((s,i)=>`<div class="card" style="--i:${i}"><h3>${esc(s.n)}</h3><p class="meta">${s.m} min</p><p>${esc(s.d)}</p><p class="price">${inr(s.p)}</p><button class="btn ghost" data-pick="${i}">Book this</button></div>`).join('');
+$('#styGrid').innerHTML=T.slice(1).map((t,i)=>`<div class="card" style="--i:${i}"><img class="pf" src="${esc(t.img||'')}" alt="Portrait of ${esc(t.n)}" width="480" height="600" loading="lazy"><h3>${esc(t.n)}</h3><p class="meta">${esc(t.r)}</p><span class="tag">Demo profile</span></div>`).join('');idx()}
+paint();
+let st={step:0};
+const IST='Asia/Kolkata';
+const api=async(u,o)=>{let r;try{r=await fetch(u,o)}catch(e){throw new Error('Network error. Please check your connection and try again.')}const j=await r.json().catch(()=>({}));if(!r.ok)throw Object.assign(new Error(j.error||'Request failed'),{code:j.code});return j};
+const istDate=ms=>new Intl.DateTimeFormat('en-CA',{timeZone:IST}).format(ms);
+const ds=d=>new Date(d).toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',timeZone:IST});
+const fmt=d=>new Date(d).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit',timeZone:IST});
+const post=(u,b)=>api(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+async function loadSlots(){const k=st.date+st.s+st.t;st.slots=null;st.err='';render();
+ try{const q=new URLSearchParams({service:S[st.s].id,date:st.date});if(T[st.t].id)q.set('stylist',T[st.t].id);const r=await api('/api/slots?'+q);if(k!==st.date+st.s+st.t)return;st.slots=r.slots}catch(e){st.err=e.message}render()}
+const bar=n=>`<div class="steps">${[0,1,2,3,4,5].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
+function render(){
+ const w=$('#wiz'),s=S[st.s];let h='';
+ if(st.step===0)h=bar(0)+`${st.off?'<p class="err" role="alert">Online booking is temporarily unavailable. Please try again later.</p>':''}<h3>1. Choose a service</h3><div class="opts">${S.map((x,i)=>`<button class="opt" data-pick="${i}">${x.n}<br><span class="meta">${inr(x.p)} · ${x.m} min</span></button>`).join('')}</div>`;
+ if(st.step===1)h=bar(1)+`<h3>2. Choose a stylist</h3><div class="opts">${T.map((x,i)=>`<button class="opt" data-sty="${i}">${x.n}<br><span class="meta">${x.r}</span></button>`).join('')}</div>`;
+ if(st.step===2){const a=[];for(let i=0;i<14;i++){const d=new Date();d.setDate(d.getDate()+i);a.push(d)}
+  h=bar(2)+`<h3>3. Pick a date</h3><div class="opts">${a.map(d=>`<button class="opt" data-date="${istDate(d.getTime())}">${ds(d)}</button>`).join('')}</div>`}
+ if(st.step===3){h=bar(3)+`<h3>4. Choose a time</h3><p class="meta">${ds(st.date+'T12:00:00+05:30')} · ${s.n} (${s.m} min) · times in IST</p>${st.note?`<p class="err" role="alert">${esc(st.note)}</p>`:''}`+(st.err?`<p class="err" role="alert">${esc(st.err)}</p><div class="acts"><button class="btn ghost" data-back>Back</button><button class="btn" data-retry>Try again</button></div>`:!st.slots?'<p class="meta" role="status">Checking availability…</p>':st.slots.some(x=>x.free)?`<div class="opts">${st.slots.map(x=>`<button class="opt" ${x.free?'':'disabled'} data-time="${esc(x.slot)}">${fmt(x.slot)}</button>`).join('')}</div><div class="acts"><button class="btn ghost" data-back>Back</button></div>`:'<p class="err">No times left on this day. Please choose another date.</p><div class="acts"><button class="btn ghost" data-back>Back</button></div>')}
+ if(st.step===4)h=bar(4)+`<h3>5. Your details</h3><p class="meta">Used only to create your booking. The deposit step is a demo — no real payment is taken.</p>
+  <label for="nm">Name</label><input id="nm" type="text" autocomplete="name" value="${esc(st.name||'')}">
+  <label for="ph">Phone</label><input id="ph" type="tel" inputmode="tel" autocomplete="tel" value="${esc(st.phone||'')}">
+  <label for="em">Email</label><input id="em" type="email" inputmode="email" autocomplete="email" value="${esc(st.email||'')}">
+  <p class="err" id="e" role="alert"></p><div class="acts"><button class="btn ghost" data-back>Back</button><button class="btn" data-det>Continue</button></div>`;
+ if(st.step===5){const dep=Math.round(s.p*DEP);h=bar(5)+`<h3>6. Review</h3><table><tr><td>Service</td><td>${s.n}</td></tr><tr><td>Stylist</td><td>${T[st.t].n}</td></tr><tr><td>When</td><td>${ds(st.start)}, ${fmt(st.start)} IST</td></tr><tr><td>Total</td><td>${inr(s.p)}</td></tr><tr><td>Planned deposit (20%)</td><td class="price">${inr(dep)}</td></tr><tr><td>Balance at studio</td><td>${inr(s.p-dep)}</td></tr></table>
+  <p class="meta"><strong>Planned cancellation &amp; refund policy:</strong> cancel up to 24 hours before your appointment for a deposit refund. The final policy will be set by the studio.</p>
+  <p class="meta">Your time is held for 10 minutes while you pay the deposit. Final amounts are confirmed by the server.</p><p class="err" role="alert">${esc(st.err||'')}</p>
+  <div class="acts"><button class="btn ghost" data-back>Back</button><button class="btn" data-pay>Pay ${inr(dep)} deposit</button><button class="btn ghost" data-new>Start over</button></div>`}
+ if(st.step===6){const o=st.order,M={upi:'UPI',card:'Cards',nb:'Net banking',wal:'Wallets'},dp=inr(o.deposit_paise/100),P={
+  upi:'<p class="meta">Demo UPI ID</p><div class="fake">demo@testbank</div>',
+  card:'<p class="meta">Fictional test card — not a real card</p><div class="fake">4242 4242 4242 4242 &nbsp; 12/30 &nbsp; •••</div>',
+  nb:'<p class="meta">Choose a demo bank</p><div class="opts"><button class="opt sel">Demo Bank of Test</button><button class="opt">Sample National Bank</button></div>',
+  wal:'<p class="meta">Choose a demo wallet</p><div class="opts"><button class="opt sel">Demo Wallet</button><button class="opt">Sample Pay</button></div>'};
+  h=bar(5)+`<h3>Pay deposit</h3><div class="pay"><div class="pay-h"><span>The Gilded Chair</span><b>${dp}</b></div><div class="pay-t" role="tablist">${Object.keys(M).map(k=>`<button class="opt ${k===st.m?'sel':''}" role="tab" aria-selected="${k===st.m}" data-m="${k}">${M[k]}</button>`).join('')}</div><div class="pay-b">${P[st.m]}</div>${st.msg?`<p class="err pay-b" role="alert">${esc(st.msg)}</p>`:''}<div class="acts"><button class="btn" data-out="success">Pay ${dp}</button><button class="btn ghost" data-out="failure">Simulate failure</button><button class="btn ghost" data-out="cancel">Cancel</button></div></div><p class="meta">Demo payment — no real money will be charged.</p>`}
+ if(st.step===7){const o=st.order,dp=o.deposit_paise/100,tt=o.total_paise/100;h=bar(5)+`<h3>Booking confirmed</h3><p class="okm" role="status">Thank you, ${esc(st.name)}. Your chair is reserved.</p><table><tr><td>Booking ref</td><td>${esc(o.booking_id.slice(0,8).toUpperCase())}</td></tr><tr><td>Service</td><td>${esc(s.n)}</td></tr><tr><td>Stylist</td><td>${esc(o.stylist_name)}</td></tr><tr><td>When</td><td>${ds(st.start)}, ${fmt(st.start)} IST</td></tr><tr><td>Deposit (demo)</td><td>${inr(dp)}</td></tr><tr><td>Balance at studio</td><td>${inr(tt-dp)}</td></tr></table><p class="meta">Demo payment — no real money was charged.</p><div class="acts"><button class="btn" data-new>Book another</button></div>`}
+ if(st.step===8)h=bar(5)+`<h3>Booking cancelled</h3><p class="meta">The payment was cancelled and your held time has been released.</p><div class="acts"><button class="btn" data-new>Start over</button></div>`;
+ w.innerHTML=h;
+}
+function go(n){st.step=n;st.note='';st.err='';render()}
+document.addEventListener('click',async e=>{
+ const t=e.target.closest('button,a');if(!t)return;
+ const d=t.dataset;if(st.off&&d.pick!==undefined)return;
+ if(d.pick!==undefined){st.s=+d.pick;go(1);if(t.closest('.card'))$('#book').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'})}
+ else if(d.sty!==undefined){st.t=+d.sty;go(2)}
+ else if(d.date!==undefined){st.date=d.date;st.note='';st.step=3;loadSlots()}
+ else if(d.retry!==undefined){loadSlots()}
+ else if(d.time!==undefined){st.start=d.time;go(4)}
+ else if(d.back!==undefined){go(st.step-1)}
+ else if(d.det!==undefined){
+  st.name=$('#nm').value.trim();st.phone=$('#ph').value.trim();st.email=$('#em').value.trim();
+  if(!st.name||st.name.trim().length<2)return $('#e').textContent='Please enter your name (at least 2 characters).';
+  if(!/^[0-9+\s-]{7,15}$/.test(st.phone))return $('#e').textContent='Please enter a valid phone number.';
+  if(!/^\S+@\S+\.\S+$/.test(st.email))return $('#e').textContent='Please enter a valid email address.';
+  go(5)}
+ else if(d.pay!==undefined){t.disabled=true;st.err='';try{st.order=await post('/api/createOrder',{serviceId:S[st.s].id,stylistId:T[st.t].id||null,startsAt:st.start,name:st.name,phone:st.phone,email:st.email});st.m='upi';st.msg='';go(6)}catch(x){if(x.code==='slot_unavailable'){st.step=3;await loadSlots();st.note=x.message;render()}else{st.err=x.message;render()}}}
+ else if(d.m!==undefined){st.m=d.m;render()}
+ else if(d.out!==undefined){t.disabled=true;try{await post('/api/demoPay',{bookingId:st.order.booking_id,outcome:d.out});if(d.out==='success')go(7);else if(d.out==='cancel')go(8);else{st.msg='Payment failed (simulated). You can try again.';render()}}catch(x){st.msg=x.message;render()}}
+ else if(d.new!==undefined){st={step:0,off:st.off};go(0)}
+ if(t.id==='burger'){const o=$('#menu').classList.toggle('open');t.setAttribute('aria-expanded',o)}
+ else if(t.closest('#menu'))$('#menu').classList.remove('open');
+});
+render();
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}));
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+(async()=>{try{const r=await api('/api/services');S=r.services.map(x=>({id:x.id,n:x.name,p:x.price_paise/100,m:x.duration_minutes,d:x.description}));const im=Object.fromEntries(T.map(t=>[t.n,t]));T=[T[0],...r.stylists.map(x=>({id:x.id,n:x.name,r:x.role,img:(im[x.name]||{}).img||''}))];paint()}catch(e){st.off=1;render()}})();
+(()=>{const rm=matchMedia('(prefers-reduced-motion:reduce)').matches,hd=$('header'),pg=$('.prog'),hero=$('.hero .wrap'),l1=$('.hl1'),l2=$('.hl2'),vis=new Set();let tk=0;
+ const io2=new IntersectionObserver(es=>es.forEach(x=>x.isIntersecting?vis.add(x.target):vis.delete(x.target)));
+ if(!rm)document.querySelectorAll('.gal img').forEach(i=>io2.observe(i));
+ function f(){tk=0;const y=scrollY,H=innerHeight,mx=document.documentElement.scrollHeight-H;pg.style.transform=`scaleX(${mx>0?y/mx:0})`;hd.classList.toggle('sc',y>10);
+  if(rm)return;const p=Math.min(y/H,1);
+  if(p<1||hero.style.opacity!=='0.1'){hero.style.transform=`translate3d(0,${p*60}px,0) scale(${1-p*.08})`;hero.style.opacity=1-p*.9;l1.style.transform=`translate3d(0,${p*120}px,0) scale(${1+p*.15})`;l2.style.transform=`translate3d(0,${p*40}px,0) rotate(${p*8}deg)`}
+  vis.forEach(i=>{const r=i.parentNode.getBoundingClientRect();i.style.transform=`translate3d(0,${(r.top+r.height/2-H/2)/H*-24}px,0) scale(1.12)`})}
+ addEventListener('scroll',()=>{tk||(tk=requestAnimationFrame(f))},{passive:true});f();idx();
+ if(!rm&&matchMedia('(hover:hover) and (pointer:fine)').matches){
+  document.addEventListener('pointermove',e=>{const c=e.target.closest('.card');if(c){const r=c.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;c.style.setProperty('--ry',(x-.5)*8+'deg');c.style.setProperty('--rx',(.5-y)*8+'deg');c.style.setProperty('--mx',x*100+'%');c.style.setProperty('--my',y*100+'%')}
+   if(e.target.closest('.hero')){const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;l1.style.translate=`${x*-30}px ${y*-20}px`;l2.style.translate=`${x*20}px ${y*14}px`}},{passive:true});
+  document.addEventListener('pointerout',e=>{const c=e.target.closest('.card');if(c&&!c.contains(e.relatedTarget)){c.style.setProperty('--rx','0deg');c.style.setProperty('--ry','0deg')}})}
+})();
+</script>
+</body>
+</html>
